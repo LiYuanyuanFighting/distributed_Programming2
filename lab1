@@ -1,0 +1,9 @@
+# Exercises for refreshing Java programming
+
+### These exercises are about the use of files, collections and dates/times in Java. The solutions to these
+exercises are not to be submitted.
+
+- Be careful about the file extension maybe hidden, like the mistake I made:
+dictionary.txt.txt
+
+- the default path for the input file should be inside javaRefresh

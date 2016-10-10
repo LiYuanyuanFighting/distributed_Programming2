@@ -7,3 +7,48 @@ exercises are not to be submitted.
 dictionary.txt.txt
 
 - the default path for the input file should be inside javaRefresh
+    /*
+     * Date: 10/10/2016
+     * Objective: loads the rows of a text file called dictionary.txt, using a Collection (you are free to
+    choose the specific type to use) of String objects (one object per row);
+     * Idea: BufferReader
+     * */
+    import java.io.*;
+    import java.util.ArrayList;
+    
+    public class LoadFile {
+    
+    	private String fileName;
+    	private String path;
+    	private String filePath;
+    	
+    	public LoadFile(String fileName, String path){
+    		this.fileName = fileName;
+    		this.path = path;
+    		this.filePath = path + "/" + fileName;
+    	}
+    	
+    	public void read() throws IOException{
+    		ArrayList<String> strings = new ArrayList<String >();
+    		FileInputStream fin = null;
+    		int i = 0;
+    		try {
+    			fin = new FileInputStream(filePath);
+    		} catch (IOException e) {
+    			System.out.println(e.toString()+"!!!");
+    			System.out.println("File " + fileName + " not found");
+    		}
+    		
+    		DataInputStream in = new DataInputStream(fin);
+    		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    		String strLine = null;
+    		
+    		while ((strLine = br.readLine())!=null) {
+    			strings.add(strLine);
+    			System.out.println("line " + i + " is " + strLine);
+    			i++;
+    		}
+    		in.close();
+    	} 
+    }
+    

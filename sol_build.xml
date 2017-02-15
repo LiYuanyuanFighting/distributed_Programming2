@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="NFFG-SOL3" basedir=".">
+
+<description> Script for NFFG Assignment 3 automate building </description>
+
+<property name="gen.dir" location="${lab3.location}/generated" />
+<property name="schema.dir" location="${lab3.location}/xsd" />
+<property name="path.prefix" value="it/polito/dp2/NFFG/sol3/service" />
+<!--property name="gen-src.dir" location="${lab3.location}/gen-src" /-->
+	<property name="NEO4JURL" value="http://localhost:${tomcatPort}/Neo4JXML/rest" />
+	<property name="WADL" value="${NEO4JURL}/application.wadl"/>
+
+	<!-- Target init -->
+	<target name="init">
+		<mkdir dir="${gen.dir}" />
+	</target>
+	
+	<!-- define wjc task (WADL to Java) -->
+		<taskdef name="wjc" classname="org.jvnet.ws.wadl2java.WJCTask">
+		   <classpath>
+		   	<fileset dir="${lib.dir}" includes="*.jar" />
+		   </classpath>
+		</taskdef>
+	
+<target name="generate-artifacts">
+	<mkdir dir="${gen.dir}" />
+		   	<echo message="Compiling the descriptions..." />
+		   	<wjc description="${WADL}" package="it.polito.dp2.NFFG.sol3.service1"
+		       autoSchemaPackage="false" target="${gen.dir}">
+		     <customizations dir="${lab3.location}" includes="binding.xjc"/>
+		     <produces dir="${gen.dir}/it/polito/dp2/NFFG/sol3/service1" includes="*.java"/>
+		     <depends dir="${lab3.location}" includes="build.xml"/>
+	</wjc>
+</target>
+	
+	
+	<!-- The location for jar files -->
+
+<property name="serviceName" value="NffgService" />
+	<!-- The classpath that includes only the NFFG.jar -->
+		<path id="classpath">
+			<fileset dir="${lib.dir}">
+						<include name="**/*.jar" />
+					</fileset>
+					<fileset dir="${resources.dir}/WEB-INF/lib">
+						<include name="**/*.jar" />
+					</fileset>
+		</path>
+
+<!-- Target chk-bindings -->
+<target name="-chk-bindings">
+	<uptodate property="generate-bindings.notRequired" targetfile="${gen.dir}/.flagfile">
+		<srcfiles dir="${schema.dir}" includes="**/*.xsd" />
+	</uptodate>	
+</target>
+<!-- Target generate-bindings -->
+<target name="generate-bindings" unless="generate-bindings.notRequired" depends="init,-chk-bindings" description="Generate bindings from schema">
+	<exec executable="xjc" failonerror="true">
+		<arg value="-d" />
+		<arg value="${gen.dir}" />
+		<arg value="-p" />
+		<arg value="it.polito.dp2.NFFG.sol3.service2" />
+		<arg value="${schema.dir}/nffgVerifier.xsd" />
+	</exec>
+	<touch file="${gen.dir}/.flagfile" />
+</target>
+
+	<target name="build-service" depends="build-service1, generate-bindings" description="Build the solution of Assignment 3">
+		<echo>Building the submitted solution (if needed)...</echo>
+		<javac
+			destdir="${build.dir}"
+			debug="${debug}"
+			debuglevel="${debuglevel}"
+			source="${source}"
+			target="${target}"
+			includeantruntime="false"> 
+			<compilerarg    line="-encoding GBK "/>
+				<src path="${src.dir}"/>
+				<src path="${gen.dir}"/>
+				<include name="it/polito/dp2/NFFG/sol3/service2/*.java" />
+			<include name="it/polito/dp2/NFFG/sol3/service/*.java" />
+				<classpath>
+					<path refid="classpath" />
+				</classpath>
+		</javac>
+		<echo>Done.</echo>
+</target>
+	
+	<!-- Target build -->
+		<target name="build-service1" depends="generate-artifacts" description="Build the solution of Assignment 3">
+			<echo>Building the submitted solution (if needed)...</echo>
+			<javac
+				destdir="${build.dir}"
+				debug="${debug}"
+				debuglevel="${debuglevel}"
+				source="${source}"
+				target="${target}"
+				includeantruntime="false"> 
+					<src path="${src.dir}"/>
+					<src path="${gen.dir}"/>
+					<include name="it/polito/dp2/NFFG/sol3/service1/*.java" />
+					<classpath>
+						<path refid="classpath" />
+					</classpath>
+			</javac>
+			<echo>Done.</echo>
+	</target>
+	
+	<!-- define the "build-client" target -->
+	<target name="build-client" >
+		<echo>Compiling client...</echo>
+		<javac destdir="${build.dir}"
+				includeantruntime="false"
+				debug="${debug}"
+				debuglevel="${debuglevel}"
+				source="${source}"
+				target="${target}">
+			<src path="${src.dir}"/>
+			<include name="it/polito/dp2/NFFG/sol3/*/*.java"/>
+			<include name="it/polito/dp2/NFFG/sol3/*/*/*.java"/>
+			<classpath>
+				<path refid="classpath"/>
+			</classpath>
+		</javac>
+	</target> 
+</project>

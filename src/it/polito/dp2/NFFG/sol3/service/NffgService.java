@@ -254,7 +254,7 @@ public class NffgService {
 			return null;
 		}
 		
-		try {
+		
 		// To get the nffg
 		String nffgName = ep.getNffgName();
 		Nffg nffg = nffgMap.get(nffgName);
@@ -297,10 +297,15 @@ public class NffgService {
 					
 		// 2nd verify
 		List<Path> paths;	
-		
+		try {
 			paths = target.path("resource").path("node").path(sId).queryParam("dst", dId)
 										.request().accept(MediaType.APPLICATION_XML)
 										.get(new GenericType<List<Path>>() {});
+		} catch (NotFoundException e) { // neo4j service can be stopped
+			System.out.println("NotFoundException here!!!!!!!!!");
+			throw new InternalServerErrorException();
+		}
+		
 			System.out.println("Check verify " + name);
 					boolean tempR = true;
 					String result = null;
@@ -339,10 +344,7 @@ public class NffgService {
 					}
 					System.out.println("Check finish verify " + name);
 		return verify;
-		} catch (NotFoundException e) {
-			System.out.println("NotFoundException here!!!!!!!!!");
-			throw new InternalServerErrorException();
-		}
+		
 	}
 	public Policy modifyPolicy(Policy ep) {
 		Policy policy = createPolicy(ep.getName(), ep);
